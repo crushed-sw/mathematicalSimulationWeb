@@ -1,0 +1,27 @@
+html, body {
+    padding: 0;
+    border: none;
+    margin: 0;
+    font-size: 16px;
+}
+
+.p-button {
+    box-shadow: none;
+}
+
+.p-megamenu-submenu-header {
+    display: none;
+}
+
+.p-splitter-gutter {
+    background: rgba(0, 0, 0, .05);
+
+    &:active {
+        cursor: default;
+    }
+
+    .p-splitter-gutter-handle {
+        background: rgba(0, 0, 0, .1);
+    }
+}
+
