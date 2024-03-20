@@ -474,8 +474,16 @@ const FunctionType = {
         return makeFunctionResult(expr, 0, value);
     },
     log: (args: any[]): Result => {
-        const value = judgeObject(args[0]);
-        const expr = `Math.log(${value.value})`;
+        let expr: string;
+        let value: Result;
+        if(args.length === 1) {
+            value = judgeObject(args[0]);
+            expr = `Math.log(${value.value})`;
+        } else {
+            const base = judgeObject(args[0]);
+            value = judgeObject(args[1]);
+            expr = `(Math.log(${value.value})/Math.log(${base.value}))`;
+        }
 
         return makeFunctionResult(expr, 0, value);
     },
@@ -629,8 +637,32 @@ const FunctionType = {
 
         return makeFunctionResult(expr, 1, value);
     },
+    min: (args: any[]): Result => {
+        let resultExpr = "Math.min("
+        for(let i = 0; i != args.length; ++i) {
+            if(i !== 0) {
+                resultExpr += ",";
+            }
+            resultExpr += judgeObject(args[i]).value;
+        }
+        resultExpr += ")";
+
+        return createResult(false, resultExpr, 0, false);
+    },
+    max: (args: any[]): Result => {
+        let resultExpr = "Math.max("
+        for(let i = 0; i != args.length; ++i) {
+            if(i !== 0) {
+                resultExpr += ",";
+            }
+            resultExpr += judgeObject(args[i]).value;
+        }
+        resultExpr += ")";
+
+        return createResult(false, resultExpr, 0, false);
+    },
     integrate: (args: any[]): Result => {
-        // console.log(args);
+        console.log(args);
 
         const expr = judgeObject(args[0]);
         const index = judgeObject(args[1]);

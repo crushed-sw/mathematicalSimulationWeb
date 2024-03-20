@@ -1,5 +1,5 @@
 <template>
-    <div class="flex align-items-center justify-content-between">
+    <div class="flex align-items-center justify-content-between border-bottom-1 border-200">
         <NestedMenu class="border-none bg-white"></NestedMenu>
         <CrushedLogo></CrushedLogo>
         <AvatarElem></AvatarElem>

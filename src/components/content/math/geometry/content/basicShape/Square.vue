@@ -1,13 +1,13 @@
 <template>
     <v-group
-        ref="rectangleGroup"
-        :config="rectangleGroupConfig"
+        ref="squareGroup"
+        :config="squareGroupConfig"
         @mouseenter="enter"
         @mouseout="out"
         @click="click"
     >
-        <v-rect :config="maskRectangleConfig"></v-rect>
-        <v-rect :config="rectangleConfig"></v-rect>
+        <v-rect :config="maskSquareConfig"></v-rect>
+        <v-rect :config="squareConfig"></v-rect>
         <slot></slot>
     </v-group>
 </template>
@@ -63,7 +63,7 @@ const hitFunc = (context: any, shape :any) => {
     context.fillStrokeShape(shape);
 }
 
-const rectangleGroupConfig = reactive({
+const squareGroupConfig = reactive({
     index: props.index,
     x: props.points[0],
     y: props.points[1],
@@ -73,7 +73,7 @@ const rectangleGroupConfig = reactive({
     choosable: props.choosable,
 });
 
-const maskRectangleConfig = reactive({
+const maskSquareConfig = reactive({
     x: 0,
     y: 0,
     width: Math.sqrt(Math.pow(props.points[0] - props.points[2], 2) + Math.pow(props.points[1] - props.points[3], 2)),
@@ -84,7 +84,7 @@ const maskRectangleConfig = reactive({
     hitFunc: hitFunc,
 });
 
-const rectangleConfig = reactive({
+const squareConfig = reactive({
     x: 0,
     y: 0,
     width: Math.sqrt(Math.pow(props.points[0] - props.points[2], 2) + Math.pow(props.points[1] - props.points[3], 2)),
@@ -96,46 +96,46 @@ const rectangleConfig = reactive({
     hitFunc: hitFunc,
 });
 
-function updateRectangleGroupConfig() {
-    rectangleGroupConfig.index = props.index;
-    rectangleGroupConfig.x = props.points[0];
-    rectangleGroupConfig.y = props.points[1];
-    rectangleGroupConfig.draggable = props.draggable;
-    rectangleGroupConfig.rotation = Math.atan2(props.points[1] - props.points[3], props.points[0] - props.points[2]) * 180 / Math.PI - 180;
-    rectangleGroupConfig.visible = props.visible;
-    rectangleGroupConfig.choosable = props.choosable;
+function updateSquareGroupConfig() {
+    squareGroupConfig.index = props.index;
+    squareGroupConfig.x = props.points[0];
+    squareGroupConfig.y = props.points[1];
+    squareGroupConfig.draggable = props.draggable;
+    squareGroupConfig.rotation = Math.atan2(props.points[1] - props.points[3], props.points[0] - props.points[2]) * 180 / Math.PI - 180;
+    squareGroupConfig.visible = props.visible;
+    squareGroupConfig.choosable = props.choosable;
 }
 
-function updateMaskRectangleConfig(width: number, height: number) {
-    maskRectangleConfig.width = width;
-    maskRectangleConfig.height = height;
-    maskRectangleConfig.stroke = props.mask;
-    maskRectangleConfig.strokeWidth = props.strokeWidth + props.maskWidth * 2;
-    maskRectangleConfig.visible = props.isMask;
+function updateMaskSquareConfig(width: number, height: number) {
+    maskSquareConfig.width = width;
+    maskSquareConfig.height = height;
+    maskSquareConfig.stroke = props.mask;
+    maskSquareConfig.strokeWidth = props.strokeWidth + props.maskWidth * 2;
+    maskSquareConfig.visible = props.isMask;
 }
 
-function updateRectangleConfig(width: number, height: number) {
-    rectangleConfig.width = width;
-    rectangleConfig.height = height;
-    rectangleConfig.stroke = props.stroke;
-    rectangleConfig.strokeWidth = props.strokeWidth;
-    rectangleConfig.hitStrokeWidth = props.hitStrokeWidth;
-    rectangleConfig.fill = props.fill;
+function updateSquareConfig(width: number, height: number) {
+    squareConfig.width = width;
+    squareConfig.height = height;
+    squareConfig.stroke = props.stroke;
+    squareConfig.strokeWidth = props.strokeWidth;
+    squareConfig.hitStrokeWidth = props.hitStrokeWidth;
+    squareConfig.fill = props.fill;
 }
 
 watch(() => props, () => {
     const width = Math.sqrt(Math.pow(props.points[0] - props.points[2], 2) + Math.pow(props.points[1] - props.points[3], 2));
     const height = Math.sqrt(Math.pow(props.points[2] - props.points[4], 2) + Math.pow(props.points[3] - props.points[5], 2));
 
-    updateRectangleGroupConfig();
-    updateMaskRectangleConfig(width, height);
-    updateRectangleConfig(width, height);
+    updateSquareGroupConfig();
+    updateMaskSquareConfig(width, height);
+    updateSquareConfig(width, height);
 }, {deep: true, immediate: true});
 
 function enter() {
     if(props.index > 0) {
         store.global.hover.id = props.index;
-        store.global.hover.type = Types.Rectangle;
+        store.global.hover.type = Types.Square;
     }
 }
 

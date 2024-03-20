@@ -14,6 +14,37 @@ function clickRoute(event: any) {
 
 const items = reactive([
         {
+            label: "论坛",
+            items: [
+                [
+                    {
+                        items: [
+                            {
+                                label: '综合',
+                                route: '/forum/forum',
+                                command: clickRoute,
+                            },
+                            {
+                                label: '数学',
+                                route: '/forum/forum',
+                                command: clickRoute,
+                            },
+                            {
+                                label: '化学',
+                                route: '/forum/forum',
+                                command: clickRoute,
+                            },
+                            {
+                                label: '物理',
+                                route: '/forum/forum',
+                                command: clickRoute,
+                            },
+                        ],
+                    },
+                ],
+            ],
+        },
+        {
             label: "数学",
             items: [
                 [
@@ -91,6 +122,27 @@ const items = reactive([
                 ],
             ],
         },
+        // {
+        //     label: "论坛",
+        //     item: [
+        //         [
+        //             {
+        //                 items: [
+        //                     {
+        //                         label: '综合',
+        //                         route: '/forum/forum',
+        //                         command: clickRoute,
+        //                     },
+        //                     {
+        //                         label: '数学',
+        //                         route: '/forum/forum',
+        //                         command: clickRoute,
+        //                     }
+        //                 ]
+        //             }
+        //         ]
+        //     ],
+        // }
 ]);
 </script>
 

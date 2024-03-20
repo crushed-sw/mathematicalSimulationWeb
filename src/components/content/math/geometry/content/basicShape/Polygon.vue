@@ -7,8 +7,8 @@
         @mousemove="move"
         @click="click"
     >
-        <v-line :config="maskLineConfig"></v-line>
-        <v-line :config="lineConfig"></v-line>
+        <v-path :config="maskLineConfig"></v-path>
+        <v-path :config="lineConfig"></v-path>
 
         <slot></slot>
     </v-group>
@@ -32,6 +32,16 @@ const props = defineProps({
     ...(shapeBasicUtil as any),
 });
 
+let data = "";
+props.points.forEach((point: number[]) => {
+    if(data === "") {
+        data += `M ${point[0]} ${point[1]} `
+    } else {
+        data += `L ${point[0]} ${point[1]} `
+    }
+});
+data += "z";
+
 const lineGroupConfig = reactive({
     index: props.index,
     x: 0,
@@ -43,7 +53,7 @@ const lineGroupConfig = reactive({
 });
 
 const maskLineConfig = reactive({
-    points: props.points.flat(),
+    data: data,
     stroke: props.mask,
     strokeWidth: props.strokeWidth + props.maskWidth * 2,
     dash: props.dash,
@@ -51,8 +61,8 @@ const maskLineConfig = reactive({
 });
 
 const lineConfig = reactive({
+    data: data,
     fill: "rgba(0, 0, 0, 1)",
-    points: props.points.flat(),
     stroke: props.stroke,
     strokeWidth: props.strokeWidth,
     hitStrokeWidth: props.hitStrokeWidth,
@@ -67,27 +77,38 @@ function updateLineGroupConfig() {
     lineGroupConfig.choosable = props.choosable;
 }
 
-function updateMaskLineConfig() {
-    maskLineConfig.points = props.points.flat();
+function updateMaskLineConfig(data: string) {
+    maskLineConfig.data = data;
     maskLineConfig.stroke = props.mask;
     maskLineConfig.strokeWidth = props.strokeWidth + props.maskWidth * 2;
+    maskLineConfig.fill = props.fill;
     maskLineConfig.dash = props.dash;
     maskLineConfig.visible = props.isMask;
 }
 
-function updateLineConfig() {
-    lineConfig.points = props.points.flat();
-    lineConfig.stroke = props.stroke;
+function updateLineConfig(data: string) {
+    lineConfig.data = data;
     lineConfig.strokeWidth = props.strokeWidth;
     lineConfig.hitStrokeWidth = props.hitStrokeWidth;
+    lineConfig.fill = props.fill;
     lineConfig.dash = props.dash;
 }
 
 watch(() => props, () => {
+    let data = "";
+    props.points.forEach((point: number[]) => {
+        if(data === "") {
+            data += `M ${point[0]} ${point[1]} `
+        } else {
+            data += `L ${point[0]} ${point[1]} `
+        }
+    });
+    data += "z";
+
     updateLineGroupConfig();
-    updateMaskLineConfig();
-    updateLineConfig();
-}, {deep: true});
+    updateMaskLineConfig(data);
+    updateLineConfig(data);
+}, {deep: true, immediate: true});
 
 function enter(event: any) {
     if(props.index > 0) {

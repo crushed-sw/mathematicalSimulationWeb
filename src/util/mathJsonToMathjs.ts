@@ -84,30 +84,6 @@ function multivariateExpression(args: any[]): Result {
     return createResultArray(array);
 }
 
-function integrate(value: string, index: string) {
-    const timeout = 500;
-
-    const promise = new Promise((resolve, reject) => {
-        const startTime = Date.now();
-
-        const tempIntValue = nerdamer.integrate(value, index).toString();
-
-        if (Date.now() - startTime > timeout) {
-            reject(new Error('函数执行超时'));
-        } else {
-            resolve('函数执行成功');
-        }
-    });
-
-    const timeoutPromise = new Promise((resolve, reject) => {
-        setTimeout(() => {
-            reject(new Error('函数执行超时'));
-        }, timeout);
-    });
-
-    return Promise.race([promise, timeoutPromise]);
-}
-
 const FunctionType = {
     Equal: (args: any[]): Result => {
         if(args.length != 3) {
@@ -155,7 +131,47 @@ const FunctionType = {
 
         return createResult(`(-${element.value})`);
     },
+    InvisibleOperator: (args: any[]): Result => {
+        return FunctionType["Multiply"](args);
+    },
     Multiply: (args: any[]): Result => {
+        if(args.length === 3) {
+            if(args[1].fn && args[1].fn[0] === "Divide") {
+                let isDiff = true;
+                if(args[1].fn[1].sym === "d") {
+                    isDiff = true;
+                } else {
+                    isDiff = false;
+                }
+
+                if(args[1].fn[2].fn && args[1].fn[2].fn[0] === "InvisibleOperator" && args[1].fn[2].fn.length === 3 &&
+                   args[1].fn[2].fn[1].sym === "d" && args[1].fn[2].fn[2].sym) {
+                    isDiff = isDiff && true;
+                } else {
+                    isDiff = isDiff && false;
+                }
+
+                if(isDiff) {
+                    const exprValue = judgeMathJson(args[2]);
+                    const dValue = judgeMathJson(args[1].fn[2].fn[2]);
+                    if(exprValue.error || dValue.error) {
+                        return errorResult();
+                    }
+
+                    try {
+                        const diffValue = nerdamer.diff(exprValue.value, dValue.value).toString();
+                        if(diffValue.includes("diff(")) {
+                            return errorResult();
+                        } else {
+                            return createResult(`(${diffValue})`);
+                        }
+                    } catch(error) {
+                        return errorResult();
+                    }
+                }
+            }
+        }
+
         const elements = multivariateExpression(args);
         if(elements.error || !elements.isArray) {
             return errorResult();
@@ -172,11 +188,47 @@ const FunctionType = {
         return createResult(`(${resultString})`);
     },
     Divide: (args: any[]): Result => {
+        if(args.length === 3 && args[1].fn && args[1].fn[0] === "InvisibleOperator" && args[1].fn.length === 3 &&
+           args[2].fn && args[2].fn[0] === "InvisibleOperator" && args[2].fn.length === 3) {
+            let isDiff = true;
+            if(args[1].fn[1].sym === "d") {
+                isDiff = true;
+            } else {
+                isDiff = false;
+            }
+
+            if(args[2].fn[1].sym === "d" && args[2].fn[2].sym) {
+                isDiff = isDiff && true;
+            } else {
+                isDiff = isDiff && false;
+            }
+
+            if(isDiff) {
+                const exprValue = judgeMathJson(args[1].fn[2]);
+                const dValue = judgeMathJson(args[2].fn[2]);
+
+                if(exprValue.error || dValue.error) {
+                    return errorResult();
+                }
+
+                try {
+                    const diffValue = nerdamer.diff(exprValue.value, dValue.value).toString();
+                    if(diffValue.includes("diff(")) {
+                        return errorResult();
+                    } else {
+                        return createResult(`(${diffValue})`);
+                    }
+                } catch(error) {
+                    return errorResult();
+                }
+            }
+        }
+
+
         const elements = binaryExpression(args);
         if(elements.error || !elements.isArray) {
             return errorResult();
         }
-
         return createResult(`(${elements.array[0].value}/${elements.array[1].value})`);
     },
     Rational: (args: any[]): Result => {
@@ -487,6 +539,40 @@ const FunctionType = {
 
         return createResult(`(acsch(${element.value}))`);
     },
+    Min: (args: any[]): Result => {
+        const elements = multivariateExpression(args);
+        if(elements.error || !elements.isArray) {
+            return errorResult();
+        }
+
+        let resultString = "min(";
+        for(let i = 0; i != elements.array.length; ++i) {
+            if(i !== 0) {
+                resultString += ",";
+            }
+            resultString += elements.array[i].value;
+        }
+        resultString += ")";
+
+        return createResult(`${resultString}`);
+    },
+    Max: (args: any[]): Result => {
+        const elements = multivariateExpression(args);
+        if(elements.error || !elements.isArray) {
+            return errorResult();
+        }
+
+        let resultString = "maxmathJsonValue(";
+        for(let i = 0; i != elements.array.length; ++i) {
+            if(i !== 0) {
+                resultString += ",";
+            }
+            resultString += elements.array[i].value;
+        }
+        resultString += ")";
+
+        return createResult(`${resultString}`);
+    },
     Integrate: (args: any[]): Result => {
         if(args.length !== 3) {
             return errorResult();
@@ -503,8 +589,6 @@ const FunctionType = {
                 const lower = judgeMathJson(args[2].fn[2]);
                 const upper = judgeMathJson(args[2].fn[3]);
 
-                console.log(index, lower, upper);
-
                 if(index.error || lower.error || upper.error) {
                     return errorResult();
                 }
@@ -519,12 +603,34 @@ const FunctionType = {
                 return errorResult();
             }
 
-                console.log(index, 0, "x");
-            intValue = nerdamer.integrate(element.value, index.value).toString();
             intValue = `(integrate(${element.value}, ${index.value}, 0, x))`;
         }
 
         return createResult(intValue);
+    },
+    Delimiter: (args: any[]): Result => {
+        const element = unaryExpression(args);
+        if(element.error) {
+            return errorResult();
+        }
+
+        return createResult(`${element.value}`);
+    },
+    Sequence: (args: any[]): Result => {
+        const element = unaryExpression(args);
+        if(element.error) {
+            return errorResult();
+        }
+
+        return createResult(`${element.value}`);
+    },
+    Hold: (args: any[]): Result => {
+        const element = unaryExpression(args);
+        if(element.error) {
+            return errorResult();
+        }
+
+        return createResult(`${element.value}`);
     },
     Prime: (args: any[]): Result => {
         let times = 1;
@@ -574,11 +680,7 @@ const FunctionType = {
         }
 
         if(args[2].fn[0] === "Triple" && args[2].fn.length === 4) {
-            if(args[2].fn[1].fn[0] !== "Hold") {
-                return errorResult();
-            }
-
-            const index = judgeMathJson(args[2].fn[1].fn[1]);
+            const index = judgeMathJson(args[2].fn[1]);
             const lower = judgeMathJson(args[2].fn[2]);
             const upper = judgeMathJson(args[2].fn[3]);
 
@@ -601,11 +703,7 @@ const FunctionType = {
         }
 
         if(args[2].fn[0] === "Triple" && args[2].fn.length === 4) {
-            if(args[2].fn[1].fn[0] !== "Hold") {
-                return errorResult();
-            }
-
-            const index = judgeMathJson(args[2].fn[1].fn[1]);
+            const index = judgeMathJson(args[2].fn[1]);
             const lower = judgeMathJson(args[2].fn[2]);
             const upper = judgeMathJson(args[2].fn[3]);
 
@@ -621,6 +719,9 @@ const FunctionType = {
 }
 
 const SymbolType = {
+    e: (): Result => {
+        return createResult(`${Math.E}`);
+    },
     ExponentialE: (): Result => {
         return createResult(`${Math.E}`);
     },

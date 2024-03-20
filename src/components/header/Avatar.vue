@@ -15,7 +15,7 @@
 import Avatar from 'primevue/avatar';
 import Menu from 'primevue/menu';
 
-import { ref } from "vue";
+import { ref, reactive } from "vue";
 
 let isHidden = ref(false);
 
@@ -23,10 +23,10 @@ function menuToggle() {
     isHidden.value = !isHidden.value;
 }
 
-const items = ref([
-    { label: 'New', icon: 'pi pi-plus' },
-    { label: 'Search', icon: 'pi pi-search' },
-    {label: 'Home', icon: 'pi pi-home',},
+const items = reactive([
+    { label: '登陆', icon: 'pi pi-sign-in' },
+    { label: '个人信息', icon: 'pi pi-align-justify' },
+    { label: '登出', icon: 'pi pi-sign-out' },
 ]);
 </script>
 

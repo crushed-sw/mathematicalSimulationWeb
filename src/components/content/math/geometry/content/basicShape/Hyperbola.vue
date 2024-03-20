@@ -1,5 +1,12 @@
 <template>
-    <v-group ref="hyperbolaGroup" :config="hyperbolaGroupConfig">
+    <v-group
+        ref="hyperbolaGroup"
+        :config="hyperbolaGroupConfig"
+        @mouseenter="enter"
+        @mouseout="out"
+        @mousemove="move"
+        @click="click"
+    >
         <v-shape :config="maskHyperbolaConfig"></v-shape>
         <v-shape :config="hyperbolaConfig"></v-shape>
         <slot></slot>
@@ -7,8 +14,11 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, onMounted, nextTick } from "vue"
-import { shapeBasicUtil, preConfigs, addDefaultEvent } from "@/hooks/shapeHook.ts"
+import { reactive, watch } from "vue"
+import { shapeBasicUtil } from "@/hooks/shapeHook.ts"
+import { useGeometryStore, Types } from "@/stores/geometryStore"
+
+const store = useGeometryStore();
 
 const props = defineProps({
     x: {
@@ -19,24 +29,32 @@ const props = defineProps({
         type: Number,
         required: true,
     },
-    radiusX: {
+    rowX: {
         type: Number,
         required: true,
     },
-    radiusY: {
+    rowY: {
+        type: Number,
+        required: true,
+    },
+    colX: {
+        type: Number,
+        required: true,
+    },
+    colY: {
         type: Number,
         required: true,
     },
     rightPoints: {
         type: Array<Number>,
-        default: [100, 100, 200, -200],
+        default: [200, 200, 200, -200],
         validator(value: Array<number>): boolean {
             return value.length === 4;
         }
     },
     leftPoints: {
         type: Array<Number>,
-        default: [-200, 200, -100, -100],
+        default: [-200, 200, -200, -200],
         validator(value: Array<number>): boolean {
             return value.length === 4;
         }
@@ -57,6 +75,9 @@ for(let i = -360; i <= 360; ++i) {
 function drawHyperbola(context: any, sign: number, reverse: boolean,
                        controlX1: number, controlY1: number,
                        controlX2: number, controlY2: number) {
+    const xRadiusValue = Math.sqrt(Math.pow(props.x - props.rowX, 2) + Math.pow(props.y - props.rowY, 2));
+    const yRadiusValue = Math.sqrt(Math.pow(props.x - props.colX, 2) + Math.pow(props.y - props.colY, 2));
+
     let maxX = Math.max(controlX1, controlX2);
     let minX = Math.min(controlX1, controlX2);
     let maxY = Math.max(controlY1, controlY2);
@@ -67,11 +88,11 @@ function drawHyperbola(context: any, sign: number, reverse: boolean,
         let x = 0;
         let y = 0;
         if(reverse) {
-            x = props.radiusX * coshNumber[i] * sign;
-            y = props.radiusY * sinhNumber[i] * sign;
+            x = xRadiusValue * coshNumber[i] * sign;
+            y = yRadiusValue * sinhNumber[i] * sign;
         } else {
-            x = props.radiusX * coshNumber[720 - i] * sign;
-            y = props.radiusY * sinhNumber[720 - i] * sign;
+            x = xRadiusValue * coshNumber[720 - i] * sign;
+            y = yRadiusValue * sinhNumber[720 - i] * sign;
         }
         if (!flag) {
             if ((x <= maxX && x >= minX) || (y <= maxY && y >= minY)) {
@@ -99,11 +120,17 @@ const hitFunc = (context: any, shape :any) => {
     context.fillStrokeShape(shape);
 }
 
+const xRadiusValue = Math.sqrt(Math.pow(props.x - props.rowX, 2) + Math.pow(props.y - props.rowY, 2));
+const yRadiusValue = Math.sqrt(Math.pow(props.x - props.colX, 2) + Math.pow(props.y - props.colY, 2));
+
 const hyperbolaGroupConfig = reactive({
+    index: props.index,
     x: props.x,
     y: props.y,
     draggable: props.draggable,
-    rotation: props.rotation,
+    rotation: (Math.atan2(props.rowY - props.y, props.rowX - props.x) * 180) / Math.PI,
+    visible: props.visible,
+    choosable: props.choosable,
 });
 
 const hyperbolaConfig = reactive({
@@ -116,6 +143,8 @@ const hyperbolaConfig = reactive({
         context.fillStrokeShape(shape);
     },
     fill: props.fill,
+    radiusX: xRadiusValue,
+    radiusY: yRadiusValue,
     stroke: props.stroke,
     strokeWidth: props.strokeWidth,
     hitStrokeWidth: props.hitStrokeWidth,
@@ -133,20 +162,78 @@ const maskHyperbolaConfig = reactive({
     },
     fill: "rgba(0, 0, 0, 0)",
     stroke: props.mask,
-    strokeWidth: props.strokeWidth + props.maskWidth,
+    strokeWidth: props.strokeWidth + props.maskWidth * 2,
     visible: false,
     hitFunc: hitFunc,
 });
 
-const preConfig = { ...preConfigs }
+function updateHyperbolaGroupConfig() {
+    hyperbolaGroupConfig.index = props.index;
+    hyperbolaGroupConfig.x = props.x;
+    hyperbolaGroupConfig.y = props.y;
+    hyperbolaGroupConfig.draggable = props.draggable;
+    hyperbolaGroupConfig.rotation = (Math.atan2(props.rowY - props.y, props.rowX - props.x) * 180) / Math.PI;
+    hyperbolaGroupConfig.visible = props.visible;
+    hyperbolaGroupConfig.choosable = props.choosable;
+}
 
-const hyperbolaGroup = ref();
-onMounted(() => {
-    nextTick(() => {
-        const circleNode = hyperbolaGroup.value.getNode();
-        addDefaultEvent(circleNode, maskHyperbolaConfig, hyperbolaGroupConfig, preConfig);
-    });
-});
+function updateHyperbolaConfig() {
+    hyperbolaConfig.fill = props.fill;
+    hyperbolaConfig.stroke = props.stroke;
+    hyperbolaConfig.strokeWidth = props.strokeWidth;
+    hyperbolaConfig.hitStrokeWidth = props.hitStrokeWidth;
+    hyperbolaConfig.radiusX = Math.sqrt(Math.pow(props.x - props.rowX, 2) + Math.pow(props.y - props.rowY, 2));
+    hyperbolaConfig.radiusY = Math.sqrt(Math.pow(props.x - props.colX, 2) + Math.pow(props.y - props.colY, 2));
+}
 
+function updateMaskHyperbolaConfig() {
+    maskHyperbolaConfig.stroke = props.mask;
+    maskHyperbolaConfig.strokeWidth = props.strokeWidth + props.maskWidth * 2;
+    maskHyperbolaConfig.visible = props.isMask;
+}
+
+watch(() => props, () => {
+    updateHyperbolaGroupConfig();
+    updateHyperbolaConfig();
+    updateMaskHyperbolaConfig();
+}, {deep: true, immediate: true});
+
+
+function enter(event: any) {
+    if(props.index > 0) {
+        store.global.hover.id = props.index;
+        store.global.hover.type = Types.Hyperbola;
+        store.global.hover.x = event.evt.layerX;
+        store.global.hover.y = event.evt.layerY;
+    }
+
+    if(store.global.drawing) {
+        store.global.clicked = [props.index];
+    }
+}
+
+function out() {
+    if(props.index === store.global.hover.id) {
+        store.global.hover.id = -1;
+        store.global.hover.type = Types.None;
+    }
+}
+
+function move(event: any) {
+    if(store.global.hover.id === props.index) {
+        store.global.hover.x = event.evt.layerX;
+        store.global.hover.y = event.evt.layerY;
+    }
+}
+
+function click() {
+    if(props.index > 0) {
+        if(store.global.ctrl) {
+            store.global.clicked.push(props.index);
+        } else {
+            store.global.clicked = [props.index];
+        }
+    }
+}
 </script>
 

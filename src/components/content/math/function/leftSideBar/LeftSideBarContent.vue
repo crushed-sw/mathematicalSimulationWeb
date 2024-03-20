@@ -244,6 +244,7 @@ import { parseMathjs, Result } from "@/util/mathjsToMath"
 import Button from 'primevue/button';
 import SubMenu from "./SubMenu.vue";
 
+nerdamer.setFunction("integrate", ["expr", "low", "upper", "value"], "(expr+low+upper+value)");
 const functionValue = `
 function factorial(op) {
     const gammaValue = op + 1;
@@ -270,9 +271,13 @@ const subMenuPosition = reactive([0, 0]);
 const subMenuIndex = ref(-1);
 
 const ce = new ComputeEngine();
+const ceParam = {
+    canonical: false
+}
 ce.jsonSerializationOptions = {
     shorthands: [],
 }
+ce.declare("Si", { signature: { domain: "Functions" } });
 
 const functionStore = useFunctionStore();
 
@@ -339,6 +344,7 @@ function removeSpecialLists(index: number) {
 
 function parseNormalExpr(mathJsonValue: any, index: number, unknowns: string[], isValid: boolean, isEqual: boolean) {
     const mathJsonResult = parseMathJson(mathJsonValue, isValid, unknowns);
+    console.log(mathJsonValue, mathJsonResult);
     const item = functionStore.functionLists.items[index];
     item.beginValue = mathJsonResult.value;
     item.scope = [-Infinity, Infinity];
@@ -356,6 +362,7 @@ function parseNormalExpr(mathJsonValue: any, index: number, unknowns: string[], 
     });
 
     const variables = replaceParameter.variables();
+    // console.log(simplify(replaceParameter.toString()));
     const mathExpr = parseMathjs(simplify(replaceParameter.toString())) as Result;
     item.result = mathExpr;
     item.variables = variables;
@@ -492,40 +499,42 @@ function parseEqualExpr(mathJsonValue: any, index: number, unknowns: string[], i
                 if(unknowns.length === 1) {
                     const num = nerdamer(right.value);
                     if(mathJsonValue.fn[1].sym && num.variables().length === 0) {
-                        const numValue = Number(num.evaluate().text());
+                        if(!["e", "d"].includes(mathJsonValue.fn[1].sym)) {
+                            const numValue = Number(num.evaluate().text());
 
-                        let left = -10;
-                        let right = 10;
-                        if(isFinite(item.scope[0]) && isFinite(item.scope[1])) {
-                            left = Number(item.scope[0]);
-                            right = Number(item.scope[1]);
-                        }
-                        let persent = 50;
+                            let left = -10;
+                            let right = 10;
+                            if(isFinite(item.scope[0]) && isFinite(item.scope[1])) {
+                                left = Number(item.scope[0]);
+                                right = Number(item.scope[1]);
+                            }
+                            let persent = 50;
 
-                        if(numValue > right) {
-                            right = numValue;
-                            persent = 100;
-                        } else if(numValue < left) {
-                            left = numValue;
-                            persent = 0;
-                        } else {
-                            persent = ((numValue - left) / (right - left)) * 100;
-                        }
+                            if(numValue > right) {
+                                right = numValue;
+                                persent = 100;
+                            } else if(numValue < left) {
+                                left = numValue;
+                                persent = 0;
+                            } else {
+                                persent = ((numValue - left) / (right - left)) * 100;
+                            }
 
-                        item.type = 5;
-                        if(!isFinite(item.scope[0]) || !isFinite(item.scope[1]) ||
-                            numValue > Number(item.scope[1]) || numValue < Number(item.scope[0]))
-                        {
-                            item.scope = [left, right];
-                        }
+                            item.type = 5;
+                            if(!isFinite(item.scope[0]) || !isFinite(item.scope[1]) ||
+                                numValue > Number(item.scope[1]) || numValue < Number(item.scope[0]))
+                            {
+                                item.scope = [left, right];
+                            }
 
-                        item.unknowns = unknowns;
-                        item.constantValue = numValue;
-                        item.sliderPercent = persent;
-                        if(item.mathField === null) {
-                            item.mathField = document.getElementById(`mainMathInput${item.id}`);
+                            item.unknowns = unknowns;
+                            item.constantValue = numValue;
+                            item.sliderPercent = persent;
+                            if(item.mathField === null) {
+                                item.mathField = document.getElementById(`mainMathInput${item.id}`);
+                            }
+                            constantChange(item);
                         }
-                        constantChange(item);
                     }
                 }
             }
@@ -656,7 +665,7 @@ function mathBlur() {
 }
 
 function mathInput(event: any, index: number) {
-    const mathJsonValue = ce.parse(event.target.value) as any;
+    const mathJsonValue = ce.parse(event.target.value, ceParam) as any;
     const unknowns = mathJsonValue.unknowns;
     const isValid = mathJsonValue.isValid;
     const item = functionStore.functionLists.items[index];
@@ -680,6 +689,9 @@ function keyDown(event: any) {
     if(event.key === '\\') {
         event.preventDefault();
         event.target.executeCommand(['insert', '\\backslash']);
+    } else if(event.key === 'd') {
+        event.preventDefault();
+        event.target.executeCommand(['insert', 'd ']);
     } else if(event.key === 'Escape') {
         event.preventDefault();
     }
@@ -884,7 +896,7 @@ function constantChange(element: any) {
 }
 
 function constantScopeInput(event: any, element: any, left: boolean, right: boolean) {
-    const mathJsonValue = ce.parse(event.target.value) as any;
+    const mathJsonValue = ce.parse(event.target.value, ceParam) as any;
     if(!mathJsonValue.isValid || mathJsonValue.unknowns.length !== 0) {
         if(left) {
             element.scope[0] = -10;
@@ -991,7 +1003,7 @@ function updatePointAndTangent(element: any, index: number, point: boolean, x: n
 }
 
 function subPointInput(event: any, element: any, pointIndex: number, point: boolean) {
-    const mathJsonValue = ce.parse(event.target.value) as any;
+    const mathJsonValue = ce.parse(event.target.value, ceParam) as any;
     const mathjsValue = parseMathJson(mathJsonValue.json, mathJsonValue.isValid, mathJsonValue.unknowns);
 
     if(point) {
@@ -1030,7 +1042,7 @@ function rangeChange(element: any) {
 }
 
 function rangeInput(event: any, element: any, left: boolean, right: boolean) {
-    const mathJsonValue = ce.parse(event.target.value) as any;
+    const mathJsonValue = ce.parse(event.target.value, ceParam) as any;
     const mathjsValue = parseMathJson(mathJsonValue.json, mathJsonValue.isValid, mathJsonValue.unknowns);
 
     if(left) {
@@ -1075,7 +1087,7 @@ function deleteRange(element: any) {
 }
 
 function specialFuncInput(event: any, element: any, left: boolean, right: boolean) {
-    const mathJsonValue = ce.parse(event.target.value) as any;
+    const mathJsonValue = ce.parse(event.target.value, ceParam) as any;
     const mathjsValue = parseMathJson(mathJsonValue.json, mathJsonValue.isValid, mathJsonValue.unknowns);
     const constantValue = Object.fromEntries(functionStore.constantValue);
 

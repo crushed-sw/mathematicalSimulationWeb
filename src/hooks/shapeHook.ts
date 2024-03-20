@@ -1,6 +1,18 @@
 import { watch } from "vue";
 
 const shapeBasicUtil: object = {
+    index: {
+        type: Number,
+        default: 0,
+    },
+    isMask: {
+        type: Boolean,
+        default: false,
+    },
+    customId: {
+        type: Number,
+        default: -1,
+    },
     isChecked: {
         type: Boolean,
         default: false,
@@ -11,7 +23,7 @@ const shapeBasicUtil: object = {
     },
     draggable: {
         type: Boolean,
-        default: true,
+        default: false,
     },
     fill: {
         type: String,
@@ -96,11 +108,12 @@ const preConfigs: object = {
 function addDefaultEvent(groupNode: any, maskConfig: any, groupConfig: any, preConfig: any) {
     watch(() => groupConfig.isChecked, () => {
         maskConfig.visible = groupConfig.isChecked;
-        console.log(groupConfig.isChecked);
     });
 
     groupNode.on("click", () => {
-        groupConfig.isChecked = !groupConfig.isChecked;
+        if(groupNode.choosable) {
+            groupConfig.isChecked = !groupConfig.isChecked;
+        }
     });
 
     groupNode.on("mouseenter", () => {

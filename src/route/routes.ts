@@ -1,7 +1,7 @@
 export default [
     {
         path: '/',
-        redirect: '/math/function'
+        redirect: '/forum/forum'
     },
     {
         path: '/math',
@@ -63,6 +63,19 @@ export default [
             {
                 path: "material_visualization",
                 component: () => import("../components/content/chemical/MaterialVisualization.vue"),
+            },
+        ]
+    },
+    {
+        path: '/forum',
+        children: [
+            {
+                path: '',
+                redirect: '/forum/forum',
+            },
+            {
+                path: "forum",
+                component: () => import("../components/content/forum/Forum.vue"),
             },
         ]
     },

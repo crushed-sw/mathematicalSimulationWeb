@@ -1,103 +1,51 @@
 <template>
-    <div>
-        <v-stage :config="stageConfig">
-            <v-layer>
-                <Circle
-                    :={...circle}
-                ></Circle>
+    <div ref="contentContainer" class="h-full w-full relative">
+        <Content
+            :width=width
+            :height=height
+        ></Content>
 
-                <Ellipse
-                    :={...ellipse}
-                ></Ellipse>
-
-                <Hyperbola
-                    :={...hyperbola}
-                ></Hyperbola>
-
-                <Line
-                    :={...line}
-                ></Line>
-
-                <Point
-                    :={...point}
-                ></Point>
-            </v-layer>
-        </v-stage>
+        <Button
+            text
+            size="small"
+            v-tooltip.left="'显示选项列表'"
+            class="m-1 hover:bg-green-100 text-base absolute right-0 top-0"
+            v-show="!store.global.isRight"
+            @click="rightHiddenHandle"
+        >
+            <template #icon>
+                <font-awesome-icon :icon="['fas', 'wrench']" />
+            </template>
+        </Button>
     </div>
 </template>
 
 <script lang="ts" setup>
-import Circle from "./content/basicShape/Circle.vue"
-import Ellipse from "./content/basicShape/Ellipse.vue"
-import Hyperbola from "./content/basicShape/Hyperbola.vue"
-import Line from "./content/basicShape/Line.vue"
-import Parabola from "./content/basicShape/Parabola.vue"
-import Point from "./content/basicShape/Point.vue"
-import Rectangle from "./content/basicShape/Rectangle.vue"
+import { ref, onMounted } from "vue"
+import { useGeometryStore } from "@/stores/geometryStore"
+import Button from 'primevue/button';
+import Content from "./content/Content.vue"
 
-let stageConfig = {
-    width: 1000,
-    height: 1000,
-};
+const store = useGeometryStore();
 
-const circle = {
-    x: 100,
-    y: 100,
-    radius: 50,
-    fill: "rgba(0, 0, 0, 0)",
-    stroke: "rgba(0, 0, 0, 1)",
-    strokeWidth: 2,
-    mask: "rgba(255, 0, 0, 1)",
-    maskWidth: 4,
-    draggable: true,
+function rightHiddenHandle() {
+    store.global.isRight = true;
 }
 
-const ellipse = {
-    x: 200,
-    y: 300,
-    radiusX: 100,
-    radiusY: 50,
-    fill: "rgba(0, 0, 0, 0)",
-    stroke: "rgba(0, 0, 0, 1)",
-    strokeWidth: 2,
-    mask: "rgba(255, 0, 0, 1)",
-    maskWidth: 4,
-    draggable: true,
+let height = ref(0);
+let width = ref(0);
+function handleResize(entries: any) {
+    for (const entry of entries) {
+        width.value = entry.contentRect.width;
+        height.value = entry.contentRect.height;
+    }
 }
 
-const hyperbola = {
-    x: 300,
-    y: 500,
-    radiusX: 100,
-    radiusY: 50,
-    fill: "rgba(0, 0, 0, 0)",
-    stroke: "rgba(0, 0, 0, 1)",
-    strokeWidth: 2,
-    mask: "rgba(255, 0, 0, 1)",
-    maskWidth: 4,
-    draggable: true,
-}
-
-const line = {
-    points: [500, 100, 700, 100],
-    stroke: "rgba(0, 0, 0, 1)",
-    strokeWidth: 2,
-    mask: "rgba(255, 0, 0, 1)",
-    maskWidth: 4,
-    draggable: true,
-}
-
-const point = {
-    x: 100,
-    y: 100,
-    radius: 4,
-    fill: "rgba(255, 0, 0, 1)",
-    stroke: "rgba(0, 0, 0, 1)",
-    strokeWidth: 2,
-    mask: "rgba(255, 0, 0, 1)",
-    maskWidth: 2,
-    draggable: true,
-}
+const contentContainer = ref();
+onMounted(() => {
+    const resizeObserver = new ResizeObserver(handleResize);
+    resizeObserver.observe(contentContainer.value);
+});
 </script>
 
 <style lang="scss" scoped>
