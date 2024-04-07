@@ -100,7 +100,7 @@ watch(() => props, () => {
 function enter() {
     if(props.index > 0) {
         if(props.isHelp) {
-            store.global.hover.id = -1;
+            store.global.hover.id = props.index;
             store.global.hover.type = Types.HelpPoint;
         } else {
             store.global.hover.id = props.index;

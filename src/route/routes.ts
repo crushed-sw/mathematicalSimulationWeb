@@ -22,10 +22,6 @@ export default [
                 path: 'three_view',
                 component: () => import('../components/content/math/ThreeView.vue'),
             },
-            {
-                path: 'calculate',
-                component: () => import('../components/content/math/Calculate.vue'),
-            }
         ]
     },
     {

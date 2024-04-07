@@ -65,11 +65,6 @@ const items = reactive([
                                 route: '/math/three_view',
                                 command: clickRoute,
                             },
-                            {
-                                label: '计算',
-                                route: '/math/calculate',
-                                command: clickRoute,
-                            }
                         ],
                     },
                 ],

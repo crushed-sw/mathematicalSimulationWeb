@@ -1775,7 +1775,7 @@ const useGeometryStore = defineStore("geometryStore", () => {
 
             const point = getPoint(line2.leaves[1]);
             if(point) {
-                point.x = line1.points[0] + distance * Math.cos(theta - angleTheta);
+                point.x = line2.points[0] + distance * Math.cos(theta - angleTheta);
                 point.y = line2.points[1] + distance * Math.sin(theta - angleTheta);
                 pointCallBack(0, 0, point.index);
             }

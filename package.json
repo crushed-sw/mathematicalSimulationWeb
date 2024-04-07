@@ -23,6 +23,8 @@
     "calculus": "^0.0.2",
     "chart.js": "^4.4.1",
     "decimal.js": "^10.4.3",
+    "delaunator": "^5.0.1",
+    "earcut": "^2.2.4",
     "events": "^3.3.0",
     "html2canvas": "^1.4.1",
     "katex": "^0.16.9",
@@ -30,6 +32,7 @@
     "mathjax-vue3": "^1.0.1",
     "mathjs": "^12.2.0",
     "mathlive": "^0.98.0",
+    "matter-js": "^0.19.0",
     "nerdamer": "^1.1.13",
     "pinia": "^2.1.7",
     "pixi.js": "^7.3.2",
@@ -49,6 +52,7 @@
     "vue-mathjax-next": "^0.0.6",
     "vue-router": "^4.2.5",
     "vue-slicksort": "^2.0.5",
-    "vue-tsc": "^1.8.24"
+    "vue-tsc": "^1.8.24",
+    "worker-loader": "^3.0.8"
   }
 }
