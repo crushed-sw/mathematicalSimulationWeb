@@ -82,6 +82,16 @@ const items = reactive([
                                 command: clickRoute,
                             },
                             {
+                                label: '数字电路',
+                                route: '/physics/digit_circuit',
+                                command: clickRoute,
+                            },
+                            {
+                                label: '模拟电路',
+                                route: '/physics/artificial_circuit',
+                                command: clickRoute,
+                            },
+                            {
                                 label: '电学',
                                 route: '/physics/electricity',
                                 command: clickRoute,
@@ -90,7 +100,7 @@ const items = reactive([
                                 label: '电磁学',
                                 route: '/physics/electromagnetism',
                                 command: clickRoute,
-                            }
+                            },
                         ],
                     },
                 ],

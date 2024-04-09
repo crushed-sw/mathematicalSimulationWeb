@@ -5,7 +5,7 @@
 </template>
 
 <script lang="ts" setup>
-import Content from "./materialVisualization/Content.vue"
+import Content from "./digitCircuit/Content.vue"
 </script>
 
 <style lang="scss" scoped>

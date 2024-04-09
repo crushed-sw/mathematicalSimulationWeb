@@ -1,15 +1,20 @@
 <template>
-    <div ref="contentContainer" class="h-full w-full relative">
+    <div ref="contentContainer" class="h-full w-full flex">
         <Content
-            :width="width"
+            :width="width / 2"
             :height="height"
         ></Content>
+        <ViewContent
+            :width="width / 2"
+            :height="height"
+        ></ViewContent>
     </div>
 </template>
 
 <script lang="ts" setup>
 import { ref, onMounted } from "vue"
 import Content from "./content/Content.vue"
+import ViewContent from "./content/ViewContent.vue"
 
 let height = ref(0);
 let width = ref(0);
@@ -30,3 +35,4 @@ onMounted(() => {
 <style lang="scss" scoped>
 
 </style>
+

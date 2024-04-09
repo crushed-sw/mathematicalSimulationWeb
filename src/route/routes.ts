@@ -43,6 +43,14 @@ export default [
                 path: "electromagnetism",
                 component: () => import("../components/content/physics/Electromagnetism.vue"),
             },
+            {
+                path: "digit_circuit",
+                component: () => import("../components/content/physics/DigitCircuit.vue")
+            },
+            {
+                path: "artificial_circuit",
+                component: () => import("../components/content/physics/ArtificialCircuit.vue")
+            },
         ]
     },
     {

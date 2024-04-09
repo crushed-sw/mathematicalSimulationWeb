@@ -1,15 +1,15 @@
 <template>
-    <div ref="contentContainer" class="h-full w-full relative">
+    <div class="h-full w-full">
         <Content
             :width="width"
-            :height="height"
+            :height="height - 6"
         ></Content>
     </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted } from "vue"
 import Content from "./content/Content.vue"
+import { ref, onMounted } from "vue"
 
 let height = ref(0);
 let width = ref(0);
@@ -28,5 +28,4 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-
 </style>

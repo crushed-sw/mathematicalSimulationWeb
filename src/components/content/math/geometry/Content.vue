@@ -1,8 +1,8 @@
 <template>
     <div ref="contentContainer" class="h-full w-full relative">
         <Content
-            :width=width
-            :height=height
+            :width="width"
+            :height="height"
         ></Content>
 
         <Button
