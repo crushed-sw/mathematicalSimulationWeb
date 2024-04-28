@@ -1,5 +1,5 @@
 <template>
-    <div class="h-full w-full">
+    <div class="h-full w-full" ref="contentContainer">
         <Content
             :width="width"
             :height="height - 6"

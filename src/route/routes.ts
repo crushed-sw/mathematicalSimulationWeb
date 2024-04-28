@@ -81,7 +81,19 @@ export default [
                 path: "forum",
                 component: () => import("../components/content/forum/Forum.vue"),
             },
+            {
+                path: "user",
+                component: () => import("../components/content/forum/User.vue"),
+            },
         ]
     },
+    {
+        path: "/article/:articleId",
+        component: () => import("../components/content/forum/Article.vue"),
+    },
+    {
+        path: "/user/:userId",
+        component: () => import("../components/content/forum/OtherUser.vue"),
+    }
 ];
 

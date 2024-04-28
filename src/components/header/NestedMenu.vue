@@ -127,27 +127,6 @@ const items = reactive([
                 ],
             ],
         },
-        // {
-        //     label: "论坛",
-        //     item: [
-        //         [
-        //             {
-        //                 items: [
-        //                     {
-        //                         label: '综合',
-        //                         route: '/forum/forum',
-        //                         command: clickRoute,
-        //                     },
-        //                     {
-        //                         label: '数学',
-        //                         route: '/forum/forum',
-        //                         command: clickRoute,
-        //                     }
-        //                 ]
-        //             }
-        //         ]
-        //     ],
-        // }
 ]);
 </script>
 

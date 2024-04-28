@@ -11,12 +11,14 @@ import Primevue from 'primevue/config'
 import Router from './route'
 import BadgeDirective from 'primevue/badgedirective';
 import Tooltip from 'primevue/tooltip';
+import ToastService from 'primevue/toastservice';
 import VueKonva from 'vue-konva';
 
 import VueMarkdownEditor from '@kangc/v-md-editor';
 import '@kangc/v-md-editor/lib/style/base-editor.css';
-import vuepressTheme from '@kangc/v-md-editor/lib/theme/vuepress.js';
-import '@kangc/v-md-editor/lib/theme/style/vuepress.css';
+import githubTheme from '@kangc/v-md-editor/lib/theme/github.js';
+import hljs from 'highlight.js';
+import '@kangc/v-md-editor/lib/theme/style/github.css';
 import createEmojiPlugin from '@kangc/v-md-editor/lib/plugins/emoji/index';
 import '@kangc/v-md-editor/lib/plugins/emoji/emoji.css';
 import createKatexPlugin from '@kangc/v-md-editor/lib/plugins/katex/cdn';
@@ -24,18 +26,30 @@ import createMermaidPlugin from '@kangc/v-md-editor/lib/plugins/mermaid/cdn';
 import '@kangc/v-md-editor/lib/plugins/mermaid/mermaid.css';
 import createTodoListPlugin from '@kangc/v-md-editor/lib/plugins/todo-list/index';
 import '@kangc/v-md-editor/lib/plugins/todo-list/todo-list.css';
+import createCopyCodePlugin from '@kangc/v-md-editor/lib/plugins/copy-code/index';
+import '@kangc/v-md-editor/lib/plugins/copy-code/copy-code.css';
+import VMdPreview from '@kangc/v-md-editor/lib/preview';
+import '@kangc/v-md-editor/lib/style/preview.css';
 
-import Prism from 'prismjs';
+VueMarkdownEditor.use(githubTheme, {
+  Hljs: hljs,
+});
 
-VueMarkdownEditor.use(
-    vuepressTheme,
-    {Prism,}
-);
+VMdPreview.use(githubTheme, {
+  Hljs: hljs,
+});
+
 VueMarkdownEditor.use(createEmojiPlugin());
 VueMarkdownEditor.use(createKatexPlugin());
 VueMarkdownEditor.use(createMermaidPlugin());
 VueMarkdownEditor.use(createTodoListPlugin());
+VueMarkdownEditor.use(createCopyCodePlugin());
 
+VMdPreview.use(createEmojiPlugin());
+VMdPreview.use(createKatexPlugin());
+VMdPreview.use(createMermaidPlugin());
+VMdPreview.use(createTodoListPlugin());
+VMdPreview.use(createCopyCodePlugin());
 
 import 'katex/dist/katex.min.css'
 import 'primeflex/primeflex.min.css'
@@ -57,6 +71,8 @@ app.use(Router);
 app.use(Slicksort);
 app.use(VueKonva);
 app.use(VueMarkdownEditor);
+app.use(VMdPreview);
+app.use(ToastService);
 
 app.component("font-awesome-icon", FontAwesomeIcon);
 

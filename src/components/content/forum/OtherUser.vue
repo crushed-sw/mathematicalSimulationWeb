@@ -1,15 +1,23 @@
 <template>
     <div class="w-full h-full overflow-y-scroll surface-50 flex justify-content-center">
         <div :style="{width: '75%'}" class="bg-white">
-            <Fieldset v-for="item in pageContent" class="prevent-select mx-4 mt-3" @click="intoArticle(item.id)">
+            <Fieldset class="m-4" legend="个人信息">
+                <div class="flex align-items-center">
+                    <Avatar :image="avatar" size="large" shape="circle" />
+                    <div class="flex flex-column ml-3">
+                        <div><span>昵称</span>：<span>{{username}}</span></div>
+                    </div>
+                </div>
+            </Fieldset>
+            <Divider></Divider>
+
+            <Fieldset v-for="item in pageContent" class="prevent-select mx-4 mb-3" :legend="item.title" @click="intoArticle(item.id)">
                 <template #legend>
                     <div class="flex align-items-center px-2">
-                        <Avatar :image="item.avatar" shape="circle" @click.stop="intoUser(item.userid)" />
-                        <span class="font-bold ml-3">{{item.username}}</span>
+                        <span class="font-bold">{{item.title}}</span>
                     </div>
                 </template>
                 <div class="flex flex-column">
-                    <h2 class="mt-0">{{item.title}}</h2>
                     <p class="m-0">
                         {{item.content}}
                     </p>
@@ -24,10 +32,11 @@
 </template>
 
 <script lang="ts" setup>
+import Avatar from 'primevue/avatar';
 import Fieldset from 'primevue/fieldset';
 import Paginator from 'primevue/paginator';
-import Avatar from 'primevue/avatar';
-import { ref, onMounted, watch } from "vue"
+import Divider from 'primevue/divider';
+import { onMounted, ref, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
 import axios from "axios";
 
@@ -39,18 +48,14 @@ const username = ref("");
 const avatar = ref("");
 const totalPage = ref(0);
 const currentPage = ref(0);
-const pageContent = ref([] as any[]);
+const pageContent = ref([]);
 
 function intoArticle(id: number) {
     router.push({ path: `/article/${id}` })
 }
 
-function intoUser(userid: number) {
-    router.push({ path: `/user/${userid}` })
-}
-
 function getOwnArticle() {
-    axios.get(`/api/get_all_article?page=${currentPage.value}`)
+    axios.get(`/api/get_other_article?userid=${userid.value}&page=${currentPage.value}`)
         .then(function (response: any) {
             if(response.data.success) {
                 const data = JSON.parse(response.data.data);
@@ -64,23 +69,27 @@ watch(() => currentPage, () => {
 });
 
 onMounted(() => {
-    axios.get(`/api/get_num_all_article?page=-1`)
+    userid.value = Number(route.params.userId);
+    axios.get(`/api/get_inform?id=${userid.value}`)
+        .then(function (response: any) {
+            if(response.data.success) {
+                const data = JSON.parse(response.data.data);
+                username.value = data.username;
+                avatar.value = data.avatar;
+            }
+        });
+
+    axios.get(`/api/get_num_other_article?userid=${userid.value}&page=-1`)
         .then(function (response: any) {
             if(response.data.success) {
                 totalPage.value = Math.ceil(Number(response.data.data) / 10);
             }
         });
 
-    axios.get(`/api/get_all_article?page=${currentPage.value}`)
-        .then(function (response: any) {
-            if(response.data.success) {
-                const data = JSON.parse(response.data.data);
-                console.log(data);
-                pageContent.value = data;
-            }
-        });
+    getOwnArticle();
 });
 </script>
 
 <style lang="scss" scoped>
+
 </style>
