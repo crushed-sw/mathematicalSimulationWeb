@@ -38,7 +38,7 @@ let viewer: threeMol.GLViewer | undefined = undefined;
 
 function render(smiles: string) {
     if(viewer) {
-        axios.get(`http://127.0.0.1:8080/molecule?value=${smiles}`)
+        axios.get(`/api/molecule?value=${smiles}`)
         .then(function (response: any) {
             viewer.removeAllModels();
             viewer.addModel(response.data, "sdf");

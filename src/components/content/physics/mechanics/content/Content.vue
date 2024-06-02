@@ -4,7 +4,7 @@
 </template>
 
 <script lang="ts" setup>
-import Matter from "matter-js"
+import Matter from "matter-js";
 
 import { onMounted, ref, nextTick } from "vue"
 
@@ -77,21 +77,21 @@ onMounted(() => {
             }
         })
 
-        const boxA: Body = Bodies.rectangle(200, 565, 30, 30, {
+        const boxA: Body = Bodies.rectangle(600, 565, 30, 30, {
             friction: 0,
             frictionAir: 0,
             render: {
                 fillStyle: "#ff0000",
             }
         });
-        const boxB: Body = Bodies.rectangle(100, 565, 30, 30, {
+        const boxB: Body = Bodies.rectangle(400, 565, 30, 30, {
             friction: 0,
             frictionAir: 0,
             render: {
                 fillStyle: "#0000ff",
             }
         });
-        const ground = Bodies.rectangle(400, 610, 2000, 60, {
+        const ground = Bodies.rectangle(1000, 610, 2000, 60, {
             isStatic: true,
             friction: 0,
         });
@@ -128,60 +128,31 @@ onMounted(() => {
             bodyB: boxB,
         })
 
-        boxAConfig.velocity.push({ x: 0, y: -10 })
+        boxAConfig.velocity.push({ x: 0, y: -12 })
         boxAConfig.force.push({ x: 0, y: 0 })
 
         boxBConfig.velocity.push({ x: 0, y: 0 });
         boxBConfig.force.push({ x: 0, y: 0 });
 
-        // Body.setVelocity(boxB, boxBConfig.velocity[0])
+
         Body.setVelocity(boxA, boxAConfig.velocity[0])
 
+        // const boxA: Body = Bodies.circle(100, 500, 30);
+
+        // Body.setVelocity(boxA, 5);
+
         const positions: vector[] = [];
-        // Events.on(engine, 'afterUpdate', () => {
-        //     Render.startViewTransform(render);
-        //     render.context.fillStyle = "rgba(0, 0, 0, 1)";
-        //     positions.forEach((v: vector) => {
-        //         render.context.fillRect(v.x, v.y, 2, 2);
-        //     });
-        //     positions.push({ x: boxA.position.x, y: boxA.position.y });
-        //     Render.endViewTransform(render);
-        // });
-
-        Events.on(engine, 'beforeUpdate', () => {
-            // const distance = getDistance(boxA.position, boxB.position);
-            // // 根据绳子长度调整约束的长度
-            // // console.log(distance);
-            // if (distance <= ropeLen) {
-            //     constraint.bodyA = null
-            //     constraint.bodyB = null;
-            // } else {
-            //     constraint.bodyA = boxA;
-            //     constraint.bodyB = boxB;
-            // }
-
-            // const aPosition = boxA.position;
-            // const bPosition = boxB.position;
-
-            // const distance = getDistance(aPosition, bPosition);
-            // const moreDistance = Math.abs(distance - springConstraint.len);
-            // if(moreDistance > 0.0001) {
-            //     let springForce = moreDistance * springConstraint.k;
-            //     if(distance < springConstraint.len) {
-            //         springForce *= -1;
-            //     }
-
-            //     const boxAForce = getVectorWidthLen(subVector(bPosition, aPosition), springForce);
-            //     const boxBForce = getVectorWidthLen(subVector(aPosition, bPosition), springForce);
-            //     boxAConfig.force[0] = boxAForce;
-            //     boxBConfig.force[0] = boxBForce
-            // }
-
-            // Body.applyForce(boxA, boxA.position, boxAConfig.force[0])
-            // Body.applyForce(boxB, boxB.position, boxBConfig.force[0]);
+        Events.on(engine, 'afterUpdate', () => {
+            Render.startViewTransform(render);
+            render.context.fillStyle = "rgba(0, 0, 0, 1)";
+            positions.forEach((v: vector) => {
+                render.context.fillRect(v.x, v.y, 2, 2);
+            });
+            positions.push({ x: boxA.position.x, y: boxA.position.y });
+            Render.endViewTransform(render);
         });
 
-        Composite.add(engine.world, [boxA, boxB, ground, constraint ]);
+        Composite.add(engine.world, [boxA, boxB, constraint, ground]);
 
         Render.run(render);
         const runner = Runner.create();

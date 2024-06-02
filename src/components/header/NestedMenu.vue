@@ -24,22 +24,7 @@ const items = reactive([
                                 route: '/forum/forum',
                                 command: clickRoute,
                             },
-                            {
-                                label: '数学',
-                                route: '/forum/forum',
-                                command: clickRoute,
-                            },
-                            {
-                                label: '化学',
-                                route: '/forum/forum',
-                                command: clickRoute,
-                            },
-                            {
-                                label: '物理',
-                                route: '/forum/forum',
-                                command: clickRoute,
-                            },
-                        ],
+                       ],
                     },
                 ],
             ],
@@ -86,22 +71,7 @@ const items = reactive([
                                 route: '/physics/digit_circuit',
                                 command: clickRoute,
                             },
-                            {
-                                label: '模拟电路',
-                                route: '/physics/artificial_circuit',
-                                command: clickRoute,
-                            },
-                            {
-                                label: '电学',
-                                route: '/physics/electricity',
-                                command: clickRoute,
-                            },
-                            {
-                                label: '电磁学',
-                                route: '/physics/electromagnetism',
-                                command: clickRoute,
-                            },
-                        ],
+                       ],
                     },
                 ],
             ],
@@ -113,8 +83,8 @@ const items = reactive([
                     {
                         items: [
                             {
-                                label: '化学式配平',
-                                route: '/chemical/chemical_formula_balance',
+                                label: '原子轨道可视化',
+                                route: '/chemical/electron_cloud',
                                 command: clickRoute,
                             },
                             {

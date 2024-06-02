@@ -53,7 +53,7 @@ VMdPreview.use(createCopyCodePlugin());
 
 import 'katex/dist/katex.min.css'
 import 'primeflex/primeflex.min.css'
-import 'primevue/resources/themes/lara-light-green/theme.css'
+import 'primevue/resources/themes/aura-light-teal/theme.css'
 import 'primeicons/primeicons.css'
 import "mathlive/fonts.css"
 import './style.scss'

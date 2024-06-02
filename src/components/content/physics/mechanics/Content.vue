@@ -1,16 +1,15 @@
 <template>
     <div ref="contentContainer" class="h-full w-full relative">
         <Content
-            v-if="true"
             :width="width"
             :height="height"
         ></Content>
 
-        <DrawShapes
-            v-if="false"
-            :width="width"
-            :height="height"
-        ></DrawShapes>
+        <!-- <DrawShapes -->
+        <!--     v-if="false" -->
+        <!--     :width="width" -->
+        <!--     :height="height" -->
+        <!-- ></DrawShapes> -->
 
         <!-- <Ptwo -->
         <!--     v-if="false" -->

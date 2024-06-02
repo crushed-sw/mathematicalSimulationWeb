@@ -1,6 +1,6 @@
 <template>
     <div class="h-full w-full flex">
-        <LeftSideBar class="h-full w-10rem"></LeftSideBar>
+        <!-- <LeftSideBar class="h-full w-10rem"></LeftSideBar> -->
         <Content class="flex-1"></Content>
     </div>
 </template>

@@ -61,8 +61,8 @@ export default [
                 redirect: '/chemical/material_visualization',
             },
             {
-                path: "chemical_formula_balance",
-                component: () => import("../components/content/chemical/ChemicalFormulaBalance.vue"),
+                path: "electron_cloud",
+                component: () => import("../components/content/chemical/ElectronCloud.vue"),
             },
             {
                 path: "material_visualization",

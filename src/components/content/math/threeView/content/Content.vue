@@ -1,5 +1,5 @@
 <template>
-    <div class="h-full w-full">
+    <div class="h-full w-full flex justify-content-center align-items-center">
         <div class="flex flex-column">
             <div class="flex">
                 <div class="m-2 p-0" :style="drawStyle">

@@ -34,7 +34,7 @@
                     @click="deleteComment"
                 ></i>
             </template>
-            <p class="m-0">{{item.content}}</p>
+            <v-md-preview :text="item.content" class="mb-3"></v-md-preview>
             <div class="flex flex-wrap align-items-center justify-content-between gap-3">
                 <i></i>
                 <span class="p-text-secondary">{{item.time}}</span>
